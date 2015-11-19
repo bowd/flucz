@@ -1,0 +1,34 @@
+{
+  "name": "flucz",
+  "version": "0.1.0",
+  "description": "Redux inspired flux implementation",
+  "main": "lib/index.js",
+  "scripts": {
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm run compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bogdan-dumitru/flucz"
+  },
+  "peerDependencies": {
+    "immutable": "^3.7.5",
+    "react": "^0.14.0",
+    "fbjs": "^0.4.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.0"
+  },
+  "keywords": [
+    "flux",
+    "es6",
+    "redux",
+    "react"
+  ],
+  "author": "Bogdan Dumitru",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bogdan-dumitru/flucz/issues"
+  },
+  "homepage": "https://github.com/bogdan-dumitru/flucz"
+}
