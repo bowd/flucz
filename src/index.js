@@ -28,4 +28,11 @@ export function getTree() {
 
 export function dispatch(action) { reduce(tree, action); }
 export {connect} from './wrapper.js';
-export actionSwitch from './lib/action-switch.js';
+
+export function actionSwitch({map, cursor, action}) {
+  let {type, payload} = action;
+  let handler = map[type];
+  if (typeof handler === 'function') {
+    handler.call(null, cursor, payload);
+  }
+}
