@@ -27,4 +27,5 @@ export function getTree() {
 }
 
 export function dispatch(action) { reduce(tree, action); }
-export { connect } from './wrapper.js';
+export {connect} from './wrapper.js';
+export actionSwitch from './lib/action-switch.js';
