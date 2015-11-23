@@ -1,6 +1,6 @@
 {
   "name": "flucz",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Redux inspired flux implementation",
   "main": "lib/index.js",
   "scripts": {
@@ -12,7 +12,6 @@
     "url": "https://github.com/bogdan-dumitru/flucz"
   },
   "peerDependencies": {
-    "immutable": "^3.7.5",
     "react": "^0.14.0",
     "fbjs": "^0.4.0"
   },
@@ -30,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/bogdan-dumitru/flucz/issues"
   },
-  "homepage": "https://github.com/bogdan-dumitru/flucz"
+  "homepage": "https://github.com/bogdan-dumitru/flucz",
+  "dependencies": {
+    "baobab": "^2.1.1"
+  }
 }

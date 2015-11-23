@@ -1,108 +1,77 @@
 import React from 'react';
-import Immutable from 'immutable';
-import { stateMap } from './state.js';
-import { addListener, removeListener } from './index.js';
-import invariant from 'fbjs/lib/invariant';
 import equals from 'fbjs/lib/shallowEqual';
+import WrapperValidator from './lib/wrapper-validator';
+import {getTree} from './index.js';
 
 export function connect(_options) {
+  let options = _options.cursors === undefined ? {cursors: _options} : _options;
   return function(Component) {
-    let options = _options;
-    if (_options.interests === undefined) {
-      options = {interests: _options};
-    }
     return wrapperConstructor(Component, options);
   }
 }
 
-let wrapperConstructor = function(Component, {interests, load, loader, propTypes={}}) {
-  let _interests = interests;
-  interests = typeof _interests === 'function' ? _interests : (props) => { return _interests; }
-  load = !!load ? load : () => {};
-  let Loader = loader;
+export function getCursors(cursors, props) {
+  if (typeof cursors === 'function') {
+    return cursors.call(null, props);
+  } else {
+    return cursors;
+  }
+}
 
-  invariant(
-    typeof Component.propTypes === 'object',
-    'You must specify propTypes for all wrapped components. Check: %s',
-    Component.displayName
-  );
+let wrapperConstructor = function(Component, options) {
+  let {cursors, propTypes={}, child, defaultProps} = options;
+  let validator = new WrapperValidator(Component, options);
+  validator.validate();
 
-  let wrapperPropTypes = {...Component.propTypes, ...propTypes};
+  let childPropTypes = Component.propTypes || childPropTypes;
+  let componentName = Component.dislayName || Component.name;
+
+  let wrapperPropTypes = {...childPropTypes, ...propTypes};
   // Prune propTypes derived from state
-  for (let prop of Object.values(interests({}))) {
+  for (let prop of Object.values(getCursors(cursors, defaultProps))) {
     delete wrapperPropTypes[prop];
   }
 
   return class Wrapper extends React.Component {
     static propTypes = wrapperPropTypes
-    static displayName = `${Component.displayName}-Connector`
-    static _isWrapper = true
-    static _child = (Component._isWrapper ? Component._child : Component)
+    static displayName = `${componentName}-Connector`
+    static _isWrapper = true;
+    static _child = Component;
 
     constructor(props) {
       super(props);
-      this.interests = interests(props);
-      this.state = this.stateFromMap(stateMap(this.interests));
-      this._definedShouldRender =
-        Object.values(interests(props)).indexOf('shouldRender') !== -1;
-    }
-
-    stateFromMap(stateMap) {
-      let stateMutation = {};
-      for (let key in stateMap) {
-        stateMutation[this.interests[key]] = stateMap[key];
-      }
-      return stateMutation;
+      let tree = getTree();
+      this._cursors = getCursors(cursors, props);
+      this._watcher = tree.watch(this._cursors);
+      this.state = this._watcher.get();
     }
 
     componentWillMount() {
-      this.registerInterest(this.props);
-      if (!this._definedShouldRender || (!!this.state.shouldRender === false)) {
-        load(this.props, this.state);
-      }
-    }
-
-    registerInterest(props) {
-      this.listenerId = addListener(this.interests, (stateMap) => {
-        this.setState(this.stateFromMap(stateMap));
-      });
+      this._watcher.on('update', () => this.setState(this._watcher.get()))
     }
 
     componentWillReceiveProps(nextProps) {
-      let nextInterests = interests(nextProps);
-      if (!equals(this.interests, nextInterests)) {
-        this.interests = nextInterests
-        removeListener(this.listenerId);
-        this.registerInterest(nextProps);
-        load(nextProps, this.state)
-        this.setState(this.stateFromMap(stateMap(interests(nextProps))));
-      }
+      this._cursors = getCursors(cursors, nextProps);
+      this._watcher.refresh(this._cursors);
+      this.setState(this._watcher.get());
     }
 
-
     componentWillUnmount() {
-      removeListener(this.listenerId);
+      this._watcher.release();
+      delete this._watcher;
     }
 
     render() {
-      let {shouldRender, ...propsFromState} = this.state;
+      let {...propsFromState} = this.state;
       let props = {...propsFromState, ...this.props};
 
       for (let prop in propTypes) {
-        if (Object.keys(Component.propTypes).indexOf(prop) === -1) {
+        if (Object.keys(childPropTypes).indexOf(prop) === -1) {
           delete props[prop];
         }
       }
 
-      if (this._definedShouldRender && shouldRender !== true) {
-        if (Loader !== undefined) {
-          return (<Loader />);
-        } else {
-          return null;
-        }
-      } else {
-        return (<Component {...props} />)
-      }
+      return (<Component {...props} />);
     }
   };
 }
