@@ -31,7 +31,7 @@ export default class Validator {
   validateStatelessComponent() {
     let {childPropTypes} = this.options;
     invariant(
-      childPropTypes === 'object',
+      typeof childPropTypes === 'object',
       'You must specify childPropTypes in the connect '+
         'for all wrapped stateless components. Check: %s',
       this.name()
