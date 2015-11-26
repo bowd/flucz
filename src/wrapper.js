@@ -37,6 +37,7 @@ let wrapperConstructor = function(Component, options) {
     static displayName = `${componentName}-Connector`
     static _isWrapper = true;
     static _child = Component;
+    static _original = Component._isWrapper ? Component._original : Component;
 
     constructor(props) {
       super(props);

@@ -1,6 +1,6 @@
 {
   "name": "flucz",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Redux inspired flux implementation",
   "main": "lib/index.js",
   "scripts": {
