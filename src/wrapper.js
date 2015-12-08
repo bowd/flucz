@@ -23,7 +23,7 @@ let wrapperConstructor = function(Component, options) {
   let validator = new WrapperValidator(Component, options);
   validator.validate();
 
-  let childPropTypes = Component.propTypes || childPropTypes;
+  let childPropTypes = Component.propTypes || options.childPropTypes;
   let componentName = Component.dislayName || Component.name;
 
   let wrapperPropTypes = {...childPropTypes, ...propTypes};
