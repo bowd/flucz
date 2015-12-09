@@ -10,7 +10,7 @@ export function connect(_options) {
   }
 }
 
-export function getCursors(cursors, props) {
+export function getCursors(cursors, props={}) {
   if (typeof cursors === 'function') {
     return cursors.call(null, props);
   } else {
