@@ -69,7 +69,7 @@ export default class Validator {
     let {cursors, defaultProps } = options;
     let defaultCursors;
 
-    try { defaultCursors = cursors(defaultProps); }
+    try { defaultCursors = cursors(defaultProps || {}); }
     catch (e) {
       invariant(
         typeof defaultProps === 'object',
