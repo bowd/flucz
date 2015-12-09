@@ -67,12 +67,6 @@ export default class Validator {
   validateDynamicCursors() {
     let {options, Component} = this;
     let {cursors, defaultProps } = options;
-    invariant(
-      typeof defaultProps === 'object',
-      'You must specify defaultProps in connect when cursors is a function. Check: %s',
-      this.name()
-    );
-
     let defaultCursors;
 
     try { defaultCursors = cursors(defaultProps); }
