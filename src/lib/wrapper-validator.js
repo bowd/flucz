@@ -9,8 +9,7 @@ export default class Validator {
 
   validate() {
     let {Component, options} = this;
-    // Validate Component dependencies
-    if (Component.prototype instanceof React.Component) {
+    if (typeof Component.prototype.render === 'function') {
       this.validateNormalComponent();
     } else {
       this.validateStatelessComponent();
